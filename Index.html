@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>777Tiger Clicker</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body { 
+      margin: 0; 
+      background: linear-gradient(135deg, #000428, #004e92); 
+      color: #fff; 
+      font-family: system-ui; 
+      text-align: center; 
+      overflow: hidden; 
+      height: 100vh; 
+    }
+    #tiger { 
+      width: 250px; 
+      margin: 30px auto; 
+      cursor: pointer; 
+      transition: transform 0.1s; 
+      border-radius: 20px; 
+      box-shadow: 0 10px 30px rgba(255,215,0,0.3); 
+    }
+    #tiger:active { transform: scale(0.95); }
+    .coins { 
+      position: fixed; 
+      font-size: 40px; 
+      pointer-events: none; 
+      animation: up 2s forwards; 
+      z-index: 100; 
+    }
+    @keyframes up { 
+      to { transform: translateY(-300px) rotate(360deg); opacity: 0; } 
+    }
+    .counter { 
+      font-size: 50px; 
+      font-weight: 900; 
+      background: linear-gradient(45deg, gold, orange); 
+      -webkit-background-clip: text; 
+      -webkit-text-fill-color: transparent; 
+      margin: 20px 0; 
+    }
+    .btn { 
+      background: linear-gradient(45deg, gold, orange); 
+      color: black; 
+      border: none; 
+      padding: 15px 30px; 
+      border-radius: 50px; 
+      font-weight: bold; 
+      margin: 10px; 
+      font-size: 16px; 
+      cursor: pointer; 
+      box-shadow: 0 5px 15px rgba(255,215,0,0.4); 
+    }
+    .btn:hover { transform: scale(1.05); }
+    #progress { 
+      width: 80%; 
+      height: 10px; 
+      background: #333; 
+      border-radius: 5px; 
+      margin: 20px auto; 
+      overflow: hidden; 
+    }
+    #bar { 
+      height: 100%; 
+      background: gold; 
+      width: 0%; 
+      transition: width 0.5s; 
+    }
+  </style>
+</head>
+<body>
+  <h1 style="font-size: 24px; margin: 10px;">🦁 777Tiger Clicker</h1>
+  <div class="counter" id="coins">0 moedas</div>
+  <img id="tiger" src="https://i.imgur.com/5sM8i1Q.png" alt="Tigre da Fortuna" onclick="clickTiger()">
+  <p style="margin: 10px; font-size: 14px;">Clique no Tigre e acumule moedas! Ganhe mais com VIP.</p>
+  
+  <div id="progress">
+    <div id="bar"></div>
+  </div>
+  <p style="font-size: 12px; opacity: 0.8;">Progresso: 0% pro próximo nível</p>
+  
+  <button class="btn" onclick="buyVip()">VIP R$29,90 (x10 moedas!)</button>
+  <br>
+  <button class="btn" onclick="shareWithFriends()">Indicar Amigo (+R$10 cada)</button>
+  <br>
+  <button class="btn" onclick="depositPix()">Depositar Pix (Bônus Extra)</button>
+
+  <script>
+    let coins = localStorage.getItem('coins') ? parseInt(localStorage.getItem('coins')) : 0;
+    let progress = 0;
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand(); // Expande pra tela cheia
+
+    // Atualiza contador
+    function updateCounter() {
+      document.getElementById('coins').innerText = coins + ' moedas';
+      localStorage.setItem('coins', coins);
+      progress = (coins % 1000) / 10; // Barra de progresso simples
+      document.getElementById('bar').style.width = progress + '%';
+    }
+    updateCounter();
+
+    // Clique no tigre
+    function clickTiger() {
+      coins += Math.floor(Math.random() * 5) + 5; // 5-10 moedas por clique
+      updateCounter();
+      
+      // Animação de moedas subindo
+      for (let i = 0; i < 5; i++) {
+        let coin = document.createElement('div');
+        coin.innerText = '🪙';
+        coin.classList.add('coins');
+        coin.style.left = Math.random() * 100 + 'vw';
+        coin.style.top = '50vh';
+        coin.style.animationDelay = Math.random() * 0.5 + 's';
+        document.body.appendChild(coin);
+        setTimeout(() => coin.remove(), 2000);
+      }
+      
+      // Notificação no Telegram
+      tg.showAlert('Ganho de ' + (Math.floor(Math.random() * 5) + 5) + ' moedas! Continua clicando!');
+    }
+
+    // Botão VIP (abre link pra pagamento)
+    function buyVip() {
+      tg.openLink('https://picpay.me/seuusuario?amount=29.90'); // Troca pelo teu PicPay ou link de pagamento
+      tg.showAlert('VIP ativado! Agora cada clique vale 10x mais. Volta e clica!');
+      coins *= 10; // Simula boost
+      updateCounter();
+    }
+
+    // Compartilhar com amigos
+    function shareWithFriends() {
+      const message = `Vem pro 777Tiger Clicker! Eu já tenho ${coins} moedas. Ganhe R$10 por amigo! t.me/tiger777brabo_bot`;
+      tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(tg.initDataUnsafe.start_app)}&text=${encodeURIComponent(message)}`);
+    }
+
+    // Depósito Pix
+    function depositPix() {
+      tg.showAlert('Depósito mínimo R$5 no Pix abaixo. Bônus de 200% na hora!');
+      tg.openLink('https://wa.me/5511999999999?text=Quero depositar no 777Tiger!'); // Troca pelo teu WhatsApp ou link Pix
+    }
+  </script>
+</body>
+</html>
